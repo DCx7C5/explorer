@@ -34,7 +34,7 @@ function usage() {
 }
 
 // check options
-if (process.argv[2] == 'index') {
+if (process.argv[2] === 'index') {
   if (process.argv.length <3) {
     usage();
   } else {
@@ -53,14 +53,14 @@ if (process.argv[2] == 'index') {
       usage();
     }
   }
-} else if (process.argv[2] == 'market'){
+} else if (process.argv[2] === 'market'){
   database = 'market';
 } else {
   usage();
 }
 
 function create_lock(cb) {
-  if ( database == 'index' ) {
+  if ( database === 'index' ) {
     var fname = './tmp/' + database + '.pid';
     fs.appendFile(fname, process.pid, function (err) {
       if (err) {
@@ -76,7 +76,7 @@ function create_lock(cb) {
 }
 
 function remove_lock(cb) {
-  if ( database == 'index' ) {
+  if ( database === 'index' ) {
     var fname = './tmp/' + database + '.pid';
     fs.unlink(fname, function (err){
       if(err) {
@@ -92,7 +92,7 @@ function remove_lock(cb) {
 }
 
 function is_locked(cb) {
-  if ( database == 'index' ) {
+  if ( database === 'index' ) {
     var fname = './tmp/' + database + '.pid';
     fs.exists(fname, function (exists){
       if(exists) {
@@ -131,20 +131,20 @@ is_locked(function (exists) {
           console.log('Unable to connect to database: %s', dbString);
           console.log('Aborting');
           exit();
-        } else if (database == 'index') {
+        } else if (database === 'index') {
           db.check_stats(settings.coin, function(exists) {
-            if (exists == false) {
+            if (exists === false) {
               console.log('Run \'npm start\' to create database structures before running this script.');
               exit();
             } else {
               db.update_db(settings.coin, function(){
                 db.get_stats(settings.coin, function(stats){
-                  if (settings.heavy == true) {
+                  if (settings.heavy === true) {
                     db.update_heavy(settings.coin, stats.count, 20, function(){
                     
                     });
                   }
-                  if (mode == 'reindex') {
+                  if (mode === 'reindex') {
                     Tx.remove({}, function(err) { 
                       Address.remove({}, function(err2) { 
                         AddressTx.remove({}, function(err3){
@@ -173,7 +173,7 @@ is_locked(function (exists) {
                         });
                       });
                     });              
-                  } else if (mode == 'check') {
+                  } else if (mode === 'check') {
                     db.update_tx_db(settings.coin, 1, stats.count, settings.check_timeout, function(){
                       db.get_stats(settings.coin, function(nstats){
                         console.log('check complete (block: %s)', nstats.last);
@@ -182,7 +182,7 @@ is_locked(function (exists) {
                           });
                       });
                     });
-                  } else if (mode == 'update') {
+                  } else if (mode === 'update') {
                     db.update_tx_db(settings.coin, stats.last, stats.count, settings.update_timeout, function(){
                       db.update_richlist('received', function(){
                         db.update_richlist('balance', function(){
@@ -212,7 +212,7 @@ is_locked(function (exists) {
                   if (!err) {
                     console.log('%s market data updated successfully.', mkt);
                     complete++;
-                    if (complete == markets.length) {
+                    if (complete === markets.length) {
                       db.update_cronjob_run(settings.coin,{list_market_update: Math.floor(new Date() / 1000)}, function(cb) {
                         exit();
                         });
@@ -220,7 +220,7 @@ is_locked(function (exists) {
                   } else {
                     console.log('%s: %s', mkt, err);
                     complete++;
-                    if (complete == markets.length) {
+                    if (complete === markets.length) {
                       db.update_cronjob_run(settings.coin,{list_market_update: Math.floor(new Date() / 1000)}, function(cb) {
                         exit();
                         });
@@ -230,7 +230,7 @@ is_locked(function (exists) {
               } else {
                 console.log('error: entry for %s does not exists in markets db.', mkt);
                 complete++;
-                if (complete == markets.length) {
+                if (complete === markets.length) {
                   exit();
                 }
               }
